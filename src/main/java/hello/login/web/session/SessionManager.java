@@ -14,16 +14,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SessionManager {
 
     private static final String SESSION_COOKIE_NAME = "mysessionId";
-    private Map<String, Object> sessionStore = new ConcurrentHashMap<>();
+    private final Map<String, Object> sessionStore = new ConcurrentHashMap<>();
 
+    // 세션 생성
     public void createSession(Object value, HttpServletResponse response) {
+        // 세션 id를 생성하고, 값을 세션에 저장
         String sessionId = UUID.randomUUID().toString();
         sessionStore.put(sessionId, value);
 
+        // 쿠키 생성
         Cookie mySessionCookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
         response.addCookie(mySessionCookie);
     }
 
+    // 세션 조회
     public Object getSession(HttpServletRequest request) {
         Cookie sessionCookie = findCookie(request, SESSION_COOKIE_NAME);
         if (sessionCookie == null) {
@@ -32,6 +36,7 @@ public class SessionManager {
         return sessionStore.get(sessionCookie.getValue());
     }
 
+    // 세션 만료
     public void expire(HttpServletRequest request) {
         Cookie sessionCookie = findCookie(request, SESSION_COOKIE_NAME);
         if (sessionCookie != null) {
